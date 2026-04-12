@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <float.h>
+#include "astar.h"
+
+typedef struct {
+    float f;
+    int   node;
+} HeapEntry;
+
+typedef struct {
+    HeapEntry *data;
+    int        size;
+    int        cap;
+} MinHeap;
+
+static MinHeap *heap_create(int cap)
+{
+    MinHeap *h = malloc(sizeof(MinHeap));
+    h->data = malloc(cap * sizeof(HeapEntry));
+    h->size = 0;
+    h->cap  = cap;
+    return h;
+}
+
+static void heap_destroy(MinHeap *h)
+{
+    free(h->data);
+    free(h);
+}
+
+static void heap_swap(MinHeap *h, int a, int b)
+{
+    HeapEntry tmp = h->data[a];
+    h->data[a]    = h->data[b];
+    h->data[b]    = tmp;
+}
+
+static void heap_push(MinHeap *h, float f, int node)
+{
+    if (h->size == h->cap) {
+        h->cap *= 2;
+        h->data = realloc(h->data, h->cap * sizeof(HeapEntry));
+    }
+    h->data[h->size] = (HeapEntry){f, node};
+    int i = h->size++;
+    while (i > 0) {
+        int parent = (i - 1) / 2;
+        if (h->data[parent].f <= h->data[i].f) break;
+        heap_swap(h, parent, i);
+        i = parent;
+    }
+}
+
+static HeapEntry heap_pop(MinHeap *h)
+{
+    HeapEntry top = h->data[0];
+    h->data[0] = h->data[--h->size];
+    int i = 0;
+    while (1) {
+        int l = 2*i+1, r = 2*i+2, smallest = i;
+        if (l < h->size && h->data[l].f < h->data[smallest].f) smallest = l;
+        if (r < h->size && h->data[r].f < h->data[smallest].f) smallest = r;
+        if (smallest == i) break;
+        heap_swap(h, i, smallest);
+        i = smallest;
+    }
+    return top;
+}
+
+static float heuristic(const Graph *g, int a, int b)
+{
+    float dx = g->nodes[a].x - g->nodes[b].x;
+    float dy = g->nodes[a].y - g->nodes[b].y;
+    return sqrtf(dx*dx + dy*dy);
+}
+
+int astar(const Graph *g, int start, int goal, Path *out)
+{
+    int   n = g->num_nodes;
+    float g_score[MAX_NODES];
+    int   came_from[MAX_NODES];
+    char  came_via[MAX_NODES][64];
+    float leg_dist[MAX_NODES];
+    int   closed[MAX_NODES];
+
+    for (int i = 0; i < n; i++) {
+        g_score[i]     = FLT_MAX;
+        came_from[i]   = -1;
+        closed[i]      = 0;
+        leg_dist[i]    = 0.f;
+        came_via[i][0] = '\0';
+    }
+
+    g_score[start] = 0.f;
+
+    MinHeap *open = heap_create(64);
+    heap_push(open, heuristic(g, start, goal), start);
+
+    int found = 0;
+
+    while (open->size > 0) {
+        HeapEntry cur = heap_pop(open);
+        int u = cur.node;
+
+        if (u == goal) { fou
