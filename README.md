@@ -1,70 +1,49 @@
 # Campus Navigation System — A* Pathfinder
 
-A command-line campus navigation system built in C using the A* algorithm
-with an adjacency list graph representation.
+A command-line campus navigation system built in C
+using the A* algorithm with an adjacency list graph.
 
 ---
 
 ## Project Phase Status
 
-| Phase | Status | Description |
-|-------|--------|-------------|
-| Phase 2 | ✅ Complete | Core graph + A* shortest path working |
-| Phase 3 | 🔄 Planned | Advanced features (see roadmap below) |
+| Phase   | Status        | Description                                  |
+|---------|---------------|----------------------------------------------|
+| Phase 2 | Complete      | Core graph + A* shortest path working        |
+| Phase 3 | Complete      | Road blocking, multi-stop routing, full menu |
 
 ---
 
-## What Works Right Now (Phase 2)
+## Features
 
-- Build campus map as adjacency list graph
-- 12 buildings and 20 named roads
-- Weighted edges with real distances in metres
-- A* algorithm with Euclidean heuristic
+- A* shortest path algorithm with Euclidean distance heuristic
+- Adjacency list graph using linked lists
+- Weighted edges — road distances in metres
+- Road blocking and unblocking at runtime
+- Multi-stop waypoint routing with grand total distance
+- Full interactive menu system with 6 options
 - Step-by-step directions with cumulative distance
-- Single source to single destination pathfinding
 
 ---
 
-## Phase 3 Roadmap (Coming Next)
+## Campus Map — Greenfield University
 
-These features are designed and planned but will be
-implemented in Phase 3:
+12 buildings connected by 20 named roads:
 
-### 1. Road Blocking
-- Mark any road as closed at runtime
-- A* will automatically reroute around blocked roads
-- Simulates construction or campus events
-
-### 2. Multi-Stop Waypoint Routing
-- Enter multiple destinations in one trip
-- Example: Hostel → Canteen → Library → Lab
-- Shows distance for each leg and grand total
-
-### 3. Interactive Menu System
-- Full CLI menu with all options
-- Block/unblock roads interactively
-- View full campus map and building list
-
----
-
-## Campus Map
-
-12 university buildings connected by 20 named roads:
-
-| ID | Building        | Coordinates |
-|----|-----------------|-------------|
-|  0 | Main Gate       | (0, 0)      |
-|  1 | Admin Block     | (20, 30)    |
-|  2 | Lecture Hall A  | (50, 40)    |
-|  3 | Lecture Hall B  | (80, 40)    |
-|  4 | Library         | (50, 80)    |
-|  5 | Canteen         | (20, 70)    |
-|  6 | Hostel Block    | (0, 100)    |
-|  7 | Sports Ground   | (90, 90)    |
-|  8 | Lab Complex     | (80, 10)    |
-|  9 | Medical Centre  | (10, 50)    |
-| 10 | Auditorium      | (50, 110)   |
-| 11 | Parking Lot     | (90, 0)     |
+| ID | Building        |
+|----|-----------------|
+|  0 | Main Gate       |
+|  1 | Admin Block     |
+|  2 | Lecture Hall A  |
+|  3 | Lecture Hall B  |
+|  4 | Library         |
+|  5 | Canteen         |
+|  6 | Hostel Block    |
+|  7 | Sports Ground   |
+|  8 | Lab Complex     |
+|  9 | Medical Centre  |
+| 10 | Auditorium      |
+| 11 | Parking Lot     |
 
 ---
 
@@ -77,9 +56,9 @@ campus-navigation-astar/
 │   └── campus.h      # Campus map declaration
 ├── src/
 │   ├── graph.c       # Adjacency list implementation
-│   ├── astar.c       # A* engine with min-heap
-│   ├── campus.c      # University campus map data
-│   └── main.c        # Phase 2 - single path finder
+│   ├── astar.c       # A* engine with min-heap + path_print
+│   ├── campus.c      # Greenfield University map data
+│   └── main.c        # Phase 3 - full interactive menu
 ├── Makefile
 └── README.md
 
@@ -87,16 +66,27 @@ campus-navigation-astar/
 
 ## How to Build and Run
 
-```bash
 make
 ./campus_nav
-```
 
 ## How to Clean
 
-```bash
 make clean
-```
+
+---
+
+## Menu Options
+
+  +--------------------------------------------+
+  |              MAIN MENU                     |
+  |  1. Find Shortest Path (Single)            |
+  |  2. Multi-Stop Waypoint Route              |
+  |  3. Block a Road                           |
+  |  4. Unblock a Road                         |
+  |  5. View Campus Map & Road Status          |
+  |  6. List All Buildings                     |
+  |  0. Exit                                   |
+  +--------------------------------------------+
 
 ---
 
@@ -106,11 +96,13 @@ make clean
 - g(n) = actual road distance from start
 - h(n) = Euclidean straight-line distance to goal
 - Heuristic is admissible — path is always optimal
-- Min-heap priority queue for efficiency
+- Min-heap priority queue for fast node selection
+- Blocked roads are skipped — A* auto-reroutes
 
 ---
 
 ## Author
 
 University Campus Navigation System
-Phase 2 — Problem Based Learning (PBL)
+Phase 3 — Problem Based Learning (PBL)
+Built with C and A*
